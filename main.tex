@@ -1,0 +1,217 @@
+\definecolor{links}{HTML}{2A1B81}
+\hypersetup{colorlinks,linkcolor=,urlcolor=links}
+
+\usetheme{Boadilla}
+\usecolortheme{seahorse}
+\usefonttheme{serif}
+\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+\setbeamersize{description width=1cm}
+
+\usepackage{luacode}
+\usepackage{luatexja}
+\usepackage{pgfpages}
+\usepackage[osf]{mathpazo}
+
+\begin{luacode*}
+  USE_IPAFONT = os.getenv"USE_IPAFONT"
+  USE_YUFONT = os.getenv"USE_YUFONT"
+  
+  if USE_YUFONT == "true" then
+    tex.sprint("\\AtBeginDocument{\\usepackage[yu-osx, deluxe, expert]{luatexja-preset}}")
+  elseif USE_IPAFONT == "true" then
+    tex.sprint("\\AtBeginDocument{\\usepackage[ipaex, deluxe, expert]{luatexja-preset}}")
+  else
+    tex.sprint("\\AtBeginDocument{\\usepackage[hiragino-pro, deluxe, expert]{luatexja-preset}}")
+  end
+\end{luacode*}
+
+\usepackage{epigraph}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{framed}
+\usepackage{libertine}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{listings}
+
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+
+%\setbeameroption{show notes on second screen=right}
+
+\setmainfont[Ligatures=TeX]{Linux Libertine O}
+\setsansfont[Ligatures=TeX]{CMU Sans Serif}
+\setmonofont[Ligatures=TeX]{CMU Typewriter Text}
+
+\input{vc.tex}
+
+\title[Close Monad]{%
+  Close Monad\\
+  {\normalsize \href{}{????????????}}
+}
+\author{吉村 優}
+\date[May 24, 2017]{%
+  May 24, 2017 \\%
+  {\footnotesize (Commit ID: \GITAbrHash)}
+}
+\institute[]{%
+   \href{mailto:yyu@mental.poker}{yyu@mental.poker}
+}
+
+\input{./lib/quotebox.tex}
+\input{./lib/footnotemark.tex}
+\input{./lib/ballon.tex}
+\input{./lib/listings_setting.tex}
+
+\newcommand\ballref[1]{%
+\tikz \node[circle, shade,ball color=structure.fg,inner sep=0pt,%
+  text width=8pt,font=\tiny,align=center] {\color{white}\ref{#1}};
+}
+
+\begin{document}
+
+\frame{\maketitle}
+
+\begin{frame}
+  \frametitle{目次}
+
+  \tableofcontents
+\end{frame}
+
+\section{自己紹介}
+\begin{frame}
+  \frametitle{自己紹介}
+  
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \begin{figure}
+        \includegraphics[width=0.95\textwidth]{img/bird2x.png}
+      \end{figure}
+
+      \begin{description}
+        \item[Twitter] \href{https://twitter.com/\_yyu\_}{@\_yyu\_}
+        \item[Qiita] \href{http://qiita.com/yyu}{yyu}
+        \item[GitHub] \href{https://github.com/y-yu}{y-yu}
+      \end{description}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}
+        \item<2-> 筑波大学 情報科学類卒（学士）
+        \item<3-> 株式会社ドワンゴ 入社
+        \item<4-> 基盤開発本部 共通基盤開発部 \\
+        認証基盤セクション
+        \item<5-> Scalaでアカウントシステムを開発中
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{モナドとは？}
+
+\newcommand{\Point}[1]{\mathtt{point}\left(#1\right)}
+\newcommand{\FlatMap}[2]{\mathtt{flatMap}\left(#1\right)\left(#2\right)}
+
+\begin{frame}
+  \frametitle{モナドとは？}
+
+  \begin{itemize}
+    \item<2-> 次の2つの関数\lstinline|point|/\lstinline|flatMap|を持つデータ構造
+    \begin{itemize}
+      \item<3-> \lstinline|point[A](a: A): M[A]|
+      \item<3-> \lstinline|flatMap[A, B](a: M[A])(f: A => M[B]): M[B]|
+    \end{itemize}
+    \item<4-> この2つの関数は\textbf{モナド則}を満す
+  \end{itemize}
+
+  \uncover<5->{
+    \begin{block}{モナド則}
+      \begin{itemize}
+        \item {\footnotesize $\FlatMap{\Point{x}}{f} \equiv f(x)$}
+        \item {\footnotesize $\FlatMap{m}{\mathtt{point}} \equiv m$}
+        \item {\footnotesize $\FlatMap{\FlatMap{m}{f}}{g} \equiv \FlatMap{m}{x \Rightarrow \FlatMap{f(x)}{g}}$}
+      \end{itemize}
+    \end{block}
+  }
+
+  \uncover<6->{
+    \begin{exampleblock}{モナドの例}
+      \begin{itemize}
+        \item<7-> \lstinline|List[A]|
+        \item<8-> \lstinline|Option[A]|
+        \item<9-> \lstinline|Either[A, B]|
+      \end{itemize}
+    \end{exampleblock}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{モナドの例 ------ \protect\lstinline|Option[A]|}
+
+  \begin{itemize}
+    \item<2-> ある型\lstinline|A|の値があるかないかを表す
+    \item<3-> 長さが最大で1のリストと考えることもできる
+  \end{itemize}
+
+  \uncover<4->{
+    \lstinputlisting[style=scala]{./src/Option.scala}
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \uncover<2->{
+      \begin{tikzpicture}
+        \calloutquote[width=5cm,position={(0.7,-0.2)},fill=red!30,rounded corners]{いったい何が便利なの？}
+      \end{tikzpicture}
+    }
+
+    \uncover<3->{
+      \begin{tikzpicture}
+        \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{モナドであれば\textbf{手続き的な処理}を関数合成で書ける！}
+      \end{tikzpicture}
+    }
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Option|の手続き的な処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ProceduralOption.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|isDefined|で\lstinline|None|か\lstinline|Some|かをチェックしたい
+    \item<4-> \lstinline|if|がネストしていて見通しが悪い
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{手続き的な処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ProceduralClose.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|close|を忘れたらリソースリーク！
+  \end{itemize}
+\end{frame}
+
+\section*{参考文献}
+\begin{frame}
+  \frametitle{参考文献}
+
+  \bibliographystyle{junsrt_url}
+  \nocite{*}
+  \bibliography{ref}
+\end{frame}
+
+\begin{frame}
+  \centering
+  {\Huge Thank you for your attention!}
+\end{frame}
+
+\end{document}
