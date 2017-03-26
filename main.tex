@@ -127,7 +127,7 @@
   \end{itemize}
 
   \uncover<5->{
-    \begin{block}{モナド則}
+    \begin{block}{モナド則\cite{monadlaws}}
       \begin{itemize}
         \item {\footnotesize $\FlatMap{\Point{x}}{f} \equiv f(x)$}
         \item {\footnotesize $\FlatMap{m}{\mathtt{point}} \equiv m$}
@@ -220,8 +220,26 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{ここまでのまとめ}
+
   \begin{center}
-    \uncover<1->{
+    \uncover<2->{
+      \begin{tikzpicture}
+        \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{データ構造を作るならモナドの方がうれしい}
+      \end{tikzpicture}
+    }
+  \end{center}
+
+  \begin{itemize}
+    \item<3-> 業務ではオリジナルのモナドも使われている
+    \begin{itemize}
+      \item<4-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016}
+      \item<4-> Do（ロールバックモナド）
+    \end{itemize}
+  \end{itemize}
+
+  \begin{center}
+    \uncover<5->{
       \begin{tikzpicture}
         \calloutquote[width=11cm,position={(0.7,-0.2)},fill=blue!30,rounded corners]{\LARGE 自分でも何かモナドを作りたい！}
       \end{tikzpicture}
@@ -231,32 +249,57 @@
 
 \section{リソースの解放とローンパターン}
 
-% \begin{frame}
-%   \centering
-%   {\huge Close Monad}
-% \end{frame}
-
 \begin{frame}
   \frametitle{リソースを用いる手続き的な処理}
 
-  \lstinputlisting[style=scala]{./src/ProceduralClose.scala}
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ProceduralClose.scala}
+  }
   
   \begin{itemize}
-    \item<2-> \lstinline|close|を忘れたらリソースリーク！
+    \item<3-> \lstinline|close|を忘れたらリソースリーク！
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{ローンパターンを用いた方法}
+  \frametitle{ローンパターン\cite{loanpattern}を用いた方法}
 
   \uncover<2->{
     \lstinputlisting[style=scala]{./src/Using.scala}
   }
   
   \begin{itemize}
-    \item<3-> 次のように高階関数\lstinline|process|とリソースを受け取って処理
+    \item<3-> 高階関数\lstinline|process|とリソースを受け取って処理
     \item<4-> \lstinline|process|が終了したら結果に関わらず\lstinline|close|を実行
+    \item<5-> \lstinline|close|の呼び出しは自動的なので、忘れることがない
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ローンパターン\cite{loanpattern}を用いた方法}
+
+  \begin{itemize}
+    \item ただ、複数のリソースを用いるとネストする
+  \end{itemize}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/NestedUsing.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> これは微妙すぎる……
+  \end{itemize}
+\end{frame}
+
+\section{Close Moandの実装}
+
+\begin{frame}
+  \centering
+  {\Huge Close Monad}
+\end{frame}
+
+\begin{frame}
+  \lstinputlisting[style=scala, ]{./src/Close.scala}
 \end{frame}
 
 \section*{参考文献}
