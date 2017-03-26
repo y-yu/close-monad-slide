@@ -55,7 +55,8 @@
   May 24, 2017 \\%
   {\footnotesize (Commit ID: \GITAbrHash)}
 }
-\institute[]{%
+\institute[株式会社ドワンゴ]{%
+  株式会社ドワンゴ \\
    \href{mailto:yyu@mental.poker}{yyu@mental.poker}
 }
 
@@ -147,7 +148,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{モナドの例 ------ \protect\lstinline|Option[A]|}
+  \frametitle{モナドの例 --- \protect\lstinline|Option[A]|}
 
   \begin{itemize}
     \item<2-> ある型\lstinline|A|の値があるかないかを表す
@@ -157,17 +158,21 @@
   \uncover<4->{
     \lstinputlisting[style=scala]{./src/Option.scala}
   }
+
+  \begin{itemize}
+    \item<5-> \lstinline|point|と\lstinline|flatMap|から\lstinline|map|も定義
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
   \begin{center}
-    \uncover<2->{
+    \uncover<1->{
       \begin{tikzpicture}
         \calloutquote[width=5cm,position={(0.7,-0.2)},fill=red!30,rounded corners]{いったい何が便利なの？}
       \end{tikzpicture}
     }
 
-    \uncover<3->{
+    \uncover<2->{
       \begin{tikzpicture}
         \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{モナドであれば\textbf{手続き的な処理}を関数合成で書ける！}
       \end{tikzpicture}
@@ -189,14 +194,68 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{手続き的な処理}
+  \frametitle{\protect\lstinline|Option|の\protect\lstinline|flatMap|/\lstinline|map|を用いた処理}
 
   \uncover<2->{
-    \lstinputlisting[style=scala]{./src/ProceduralClose.scala}
+    \lstinputlisting[style=scala]{./src/FlatMapOption.scala}
   }
 
   \begin{itemize}
-    \item<3-> \lstinline|close|を忘れたらリソースリーク！
+    \item<3-> \lstinline|if|のネストを解消
+    \item<4-> ただ\lstinline|flatMap|/\lstinline|map|がネストしている
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Option|の\protect\lstinline|for|を用いた処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ForOption.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|for|-\lstinline|yield|は\lstinline|flatMap|/\lstinline|map|のシンタックスシュガー
+    \item<4-> ネストなどを排除した簡潔なコードに
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \uncover<1->{
+      \begin{tikzpicture}
+        \calloutquote[width=11cm,position={(0.7,-0.2)},fill=blue!30,rounded corners]{\LARGE 自分でも何かモナドを作りたい！}
+      \end{tikzpicture}
+    }
+  \end{center}  
+\end{frame}
+
+\section{リソースの解放とローンパターン}
+
+% \begin{frame}
+%   \centering
+%   {\huge Close Monad}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{リソースを用いる手続き的な処理}
+
+  \lstinputlisting[style=scala]{./src/ProceduralClose.scala}
+  
+  \begin{itemize}
+    \item<2-> \lstinline|close|を忘れたらリソースリーク！
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ローンパターンを用いた方法}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/Using.scala}
+  }
+  
+  \begin{itemize}
+    \item<3-> 次のように高階関数\lstinline|process|とリソースを受け取って処理
+    \item<4-> \lstinline|process|が終了したら結果に関わらず\lstinline|close|を実行
   \end{itemize}
 \end{frame}
 
