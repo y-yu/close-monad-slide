@@ -85,7 +85,7 @@
   \frametitle{自己紹介}
   
   \begin{columns}
-    \begin{column}{0.4\textwidth}
+    \begin{column}{0.3\textwidth}
       \centering
       \begin{figure}
         \includegraphics[width=0.95\textwidth]{img/bird2x.png}
@@ -97,7 +97,7 @@
         \item[GitHub] \href{https://github.com/y-yu}{y-yu}
       \end{description}
     \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.7\textwidth}
       \begin{itemize}
         \item<2-> 筑波大学 情報科学類卒（学士）
         \item<3-> 株式会社ドワンゴ 入社
@@ -231,7 +231,7 @@
   \end{center}
 
   \begin{itemize}
-    \item<3-> 業務ではオリジナルのモナドも使われている
+    \item<3-> ドワンゴ社内ではオリジナルのモナドも使われている
     \begin{itemize}
       \item<4-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016}
       \item<4-> Do（ロールバックモナド）
@@ -269,7 +269,7 @@
   }
   
   \begin{itemize}
-    \item<3-> 高階関数\lstinline|process|とリソースを受け取って処理
+    \item<3-> 高階関数\lstinline|process|とリソース\lstinline|resource|を受け取る
     \item<4-> \lstinline|process|が終了したら結果に関わらず\lstinline|close|を実行
     \item<5-> \lstinline|close|の呼び出しは自動的なので、忘れることがない
   \end{itemize}
@@ -291,7 +291,7 @@
   \end{itemize}
 \end{frame}
 
-\section{Close Moandの実装}
+\section{Close Moand}
 
 \begin{frame}
   \centering
@@ -299,7 +299,139 @@
 \end{frame}
 
 \begin{frame}
-  \lstinputlisting[style=scala, ]{./src/Close.scala}
+  \lstinputlisting[style=scala]{./src/Close.scala}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Close Monadの実装}
+
+  \lstinputlisting[style=scala, firstline=1, lastline=9]{./src/Close.scala}
+
+  \begin{itemize}
+    \item<2-> 型パラメータ\lstinline|R|はリソースの型を表す
+    \item<3-> 型パラメータ\lstinline|A|は結果の型を表す
+    \item<4-> 型\lstinline|R|の引数\lstinline|res|を取る
+    \item<5-> 抽象メソッド\lstinline|process|は型クラス\lstinline|Closer[R]|のインスタンスを使う
+    \item<6-> メソッド\lstinline|run|は\lstinline|try-finally|内で\lstinline|process|を実行する
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Close Monadの合成}
+
+  \lstinputlisting[style=scala, firstline=11, lastline=18]{./src/Close.scala}
+
+  \begin{itemize}
+    \item<2-> 型\lstinline|R|より抽象的な型\lstinline|AR|に対して、
+    \lstinline|A => Close[AR, B]|となる高階関数\lstinline|f|を受け取る
+    \item<3-> これらを用いて新しい\lstinline|Close[RA, B]|をインスタンス化
+    \item<4-> \lstinline|process|は、\lstinline|try|内で
+    \lstinline|self.process|を実行してその結果を\lstinline|f|に渡して、
+    さらにその結果の\lstinline|process|を実行する
+    \begin{itemize}
+      \item<5-> 最終的に\lstinline|f(self.process()).process()|の結果の型は\lstinline|B|となる
+    \end{itemize}
+    \item<6-> \lstinline|finally|の中でインスタンス\lstinline|closer|を用いて
+    リソースをクローズする
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Close Monadの合成}
+
+  \lstinputlisting[style=scala, firstline=20, lastline=21]{./src/Close.scala}
+
+  \begin{itemize}
+    \item<2-> 一度でも合成された\lstinline|Close|の\lstinline|run|メソッドを上書きする
+    \item<3-> 単に\lstinline|process|を呼び出すだけにする
+    \begin{itemize}
+      \item<4-> \lstinline|flatMap|によって\lstinline|process|内で
+      \lstinline|try-finally|が呼び出されるようになったので、\lstinline|run|では不要なため
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Close Monadの合成}
+
+  \lstinputlisting[style=scala, firstline=24, lastline=25]{./src/Close.scala}
+
+  \lstinputlisting[style=scala]{./src/CloseObject.scala}
+
+  \begin{itemize}
+    \item<2-> \lstinline|map|は\lstinline|flatMap|と\lstinline|Close\#apply|を用いて定義
+    \begin{itemize}
+      \item<3-> \lstinline|apply|は\lstinline|point|と同じ役割
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{型クラス\protect\lstinline|Closer[A]|}
+
+  \lstinputlisting[style=scala]{./src/Closer.scala}
+
+  \begin{itemize}
+    \item<2-> 基本的にはローンパターンの時と同じ
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Example}
+
+  \lstinputlisting[style=scala]{./src/Main.scala}
+
+  \begin{itemize}
+    \item<2-> \lstinline|for-yield|で簡潔に書ける
+  \end{itemize}
+\end{frame}
+
+\section{テスト}
+
+\begin{frame}
+  \begin{center}
+    \uncover<1->{
+      \begin{tikzpicture}
+        \calloutquote[width=8cm,position={(0.7,-0.2)},fill=red!30,rounded corners]{このモナドはモナド則を満しているのか？}
+      \end{tikzpicture}
+    }
+
+    \uncover<2->{
+      \begin{tikzpicture}
+        \calloutquote[width=8cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{\textbf{プロパティベーステスト}で確かめよう！}
+      \end{tikzpicture}
+    }
+  \end{center}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{プロパティベーステスト}
+
+  \uncover<2->{
+    \begin{block}{定義}
+      テスト仕様（property）を元にテストデータを自動生成し、
+      ひとつのテスト仕様に多数のテストデータを適用するテストのこと
+    \end{block}
+  }
+
+  \begin{itemize}
+    \item<3-> 今回はScalaのプロパティベーステストツールであるscalaprops\cite{scalaprops}を採用
+  \end{itemize}
+\end{frame}
+
+\section{まとめ}
+
+\begin{frame}
+  \frametitle{まとめ}
+
+  \begin{itemize}
+    \item<2-> リソース管理をモナドにした
+    \item<3-> モナド則を満しているかどうかをプロパティベーステストで検証した
+    \begin{itemize}
+      \item<4-> ただ遅延評価と組み合わせても安全なのかは疑問が残る
+    \end{itemize}
+    \item<5-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
+  \end{itemize}
 \end{frame}
 
 \section*{参考文献}
@@ -308,7 +440,8 @@
 
   \bibliographystyle{junsrt_url}
   \nocite{*}
-  \bibliography{ref}
+
+  {\footnotesize\bibliography{ref}}
 \end{frame}
 
 \begin{frame}
