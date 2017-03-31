@@ -12,7 +12,6 @@
 \usepackage{luacode}
 \usepackage{luatexja}
 \usepackage{pgfpages}
-\usepackage[osf]{mathpazo}
 
 \begin{luacode*}
   USE_IPAFONT = os.getenv"USE_IPAFONT"
@@ -408,14 +407,102 @@
   \frametitle{プロパティベーステスト}
 
   \uncover<2->{
-    \begin{block}{定義}
+    \begin{shadequote}{}
       テスト仕様（property）を元にテストデータを自動生成し、
       ひとつのテスト仕様に多数のテストデータを適用するテストのこと
-    \end{block}
+    \end{shadequote}
   }
 
   \begin{itemize}
     \item<3-> 今回はScalaのプロパティベーステストツールであるscalaprops\cite{scalaprops}を採用
+    \begin{itemize}
+      \item<4-> Scalaz\cite{scalaz}のテストにも採用されている
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{scalaprops}
+
+  \begin{itemize}
+    \item<2-> モナド則のプロパティはすでに用意されている
+    \item<3-> Close Monadのインスタンスを自動生成する部分を作ればいい
+    \item<4-> \lstinline|Gen[A]|という型クラスで型\lstinline|A|の
+    生成方法を定義する
+    \item<5-> テストでは比較をするので、型\lstinline|A|を比較するための
+    型クラス\lstinline|Equal[A]|のインスタンスも定義していく
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala, firstline=1, lastline=8]{./src/CloseTestHelper.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> 例外を送出することを想定して、テスト専用の例外\lstinline|Error|と
+    それの生成方法\lstinline|Gen[Error]|を定義する
+    \item<4-> 同じ例外が送出されることも重要なので、
+    比較できるように\lstinline|Equal[Error]|も定義する
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \lstinputlisting[style=scala, firstline=10, lastline=19]{./src/CloseTestHelper.scala}
+  \lstinputlisting[style=scala]{./src/TestCloseable.scala}
+
+  \begin{itemize}
+    \item<2-> リソースの型である\lstinline|Closeable|もテスト専用のものを定義
+    \item<3-> 割合で別のインスタンスが生成されるようにする
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \lstinputlisting[style=scala, firstline=27, lastline=29]{./src/CloseTestHelper.scala}
+  \lstinputlisting[style=scala]{./src/TestCloser.scala}
+
+  \begin{itemize}
+    \item<2-> テスト用の\lstinline|Closer|には開放されたリソースを格納する配列を用意
+    \item<3-> この配列で正しい順番でリソースがクローズされているのかをテストできる
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \lstinputlisting[style=scala, firstline=31, lastline=46]{./src/CloseTestHelper.scala}
+
+  \begin{itemize}
+    \item<2-> \lstinline|run|の結果が同じかつリソースが順序でクローズされていることを
+    同一性の条件にする
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \lstinputlisting[style=scala, firstline=48, lastline=61]{./src/CloseTestHelper.scala}
+
+  \begin{itemize}
+    \item<2-> 今まで作った\lstinline|Gen|を用いて\lstinline|Gen[Close[R, A]]|を定義
+    \item<3-> 1:2の割合で例外をスローする\lstinline|Close|と正常な値を返す\lstinline|Close|を生成
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{テスト}
+
+  \lstinputlisting[style=scala]{./src/CloseTest.scala}
+
+  \begin{itemize}
+    \item<2-> Scalazのモナドのインスタンスを作成
+    \item<3-> scalapropsに用意されているモナドの性質をテストするケースを投入
   \end{itemize}
 \end{frame}
 
@@ -430,18 +517,20 @@
     \begin{itemize}
       \item<4-> ただ遅延評価と組み合わせても安全なのかは疑問が残る
     \end{itemize}
-    \item<5-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
+    \item<5-> Close MonadについてはQiitaにも書いてGitHubに置いた\cite{closemonad,closemonadgithub}
+    \item<6-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
+    \item<7-> HList\cite{Kiselyov2004,hlist}を使うとよりよくできるかも……？
   \end{itemize}
 \end{frame}
 
 \section*{参考文献}
-\begin{frame}
+\begin{frame}[allowframebreaks]
   \frametitle{参考文献}
 
   \bibliographystyle{junsrt_url}
   \nocite{*}
 
-  {\footnotesize\bibliography{ref}}
+  \bibliography{ref}
 \end{frame}
 
 \begin{frame}

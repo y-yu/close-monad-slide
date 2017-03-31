@@ -1,5 +1,3 @@
-package close
-
 trait Closer[-A] {
   def close(a: A): Unit
 }
