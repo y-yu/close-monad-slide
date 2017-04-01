@@ -46,8 +46,7 @@
 \input{vc.tex}
 
 \title[Close Monad]{%
-  Close Monad\\
-  {\normalsize \href{}{????????????}}
+  Close Monad
 }
 \author{吉村 優}
 \date[May 24, 2017]{%
@@ -232,7 +231,7 @@
   \begin{itemize}
     \item<3-> ドワンゴ社内ではオリジナルのモナドも使われている
     \begin{itemize}
-      \item<4-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016}
+      \item<4-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016,fujitasksimple}
       \item<4-> Do（ロールバックモナド）
     \end{itemize}
   \end{itemize}
@@ -344,8 +343,11 @@
     \item<2-> 一度でも合成された\lstinline|Close|の\lstinline|run|メソッドを上書きする
     \item<3-> 単に\lstinline|process|を呼び出すだけにする
     \begin{itemize}
-      \item<4-> \lstinline|flatMap|によって\lstinline|process|内で
-      \lstinline|try-finally|が呼び出されるようになったので、\lstinline|run|では不要なため
+      \item<4-> 未合成の\lstinline|Close|インスタンスの\lstinline|run|が呼ばれた場合でも
+      リソースをクローズするため、最初の\lstinline|run|の定義では\lstinline|try-finally|で
+      リソースをクローズしていた
+      \item<5-> 合成された場合、\lstinline|flatMap|によって\lstinline|process|内で
+      \lstinline|try-finally|が呼び出されるので\lstinline|run|では不要となる
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -362,6 +364,7 @@
     \begin{itemize}
       \item<3-> \lstinline|apply|は\lstinline|point|と同じ役割
     \end{itemize}
+    \item<4-> \lstinline|Option|とほぼ同様
   \end{itemize}
 \end{frame}
 
@@ -418,6 +421,7 @@
     \begin{itemize}
       \item<4-> Scalaz\cite{scalaz}のテストにも採用されている
     \end{itemize}
+    \item<5-> 証明とは違うので完全ではないが比較的簡単
   \end{itemize}
 \end{frame}
 
@@ -427,8 +431,8 @@
   \begin{itemize}
     \item<2-> モナド則のプロパティはすでに用意されている
     \item<3-> Close Monadのインスタンスを自動生成する部分を作ればいい
-    \item<4-> \lstinline|Gen[A]|という型クラスで型\lstinline|A|の
-    生成方法を定義する
+    \item<4-> \lstinline|Gen[A]|という型クラスのインスタンスで
+    型\lstinline|A|の生成方法を定義する
     \item<5-> テストでは比較をするので、型\lstinline|A|を比較するための
     型クラス\lstinline|Equal[A]|のインスタンスも定義していく
   \end{itemize}
@@ -491,7 +495,7 @@
 
   \begin{itemize}
     \item<2-> 今まで作った\lstinline|Gen|を用いて\lstinline|Gen[Close[R, A]]|を定義
-    \item<3-> 1:2の割合で例外をスローする\lstinline|Close|と正常な値を返す\lstinline|Close|を生成
+    \item<3-> 適当な割合で例外をスローする\lstinline|Close|と正常な値を返す\lstinline|Close|を生成
   \end{itemize}
 \end{frame}
 
