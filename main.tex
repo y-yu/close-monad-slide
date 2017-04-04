@@ -46,7 +46,8 @@
 \input{vc.tex}
 
 \title[Close Monad]{%
-  Close Monad
+  {\LARGE Close Monad}\\
+  {\normalsize 作って学ぶモナド入門}
 }
 \author{吉村 優}
 \date[May 24, 2017]{%
@@ -520,10 +521,11 @@
     \item<3-> モナド則を満しているかどうかをプロパティベーステストで検証した
     \begin{itemize}
       \item<4-> ただ遅延評価と組み合わせても安全なのかは疑問が残る
+      \item<5-> プロダクションで利用するにはやや不安
     \end{itemize}
-    \item<5-> Close MonadについてはQiitaにも書いてGitHubに置いた\cite{closemonad,closemonadgithub}
-    \item<6-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
-    \item<7-> HList\cite{Kiselyov2004,hlist}を使うとよりよくできるかも……？
+    \item<6-> Close MonadについてはQiitaにも書いてGitHubに置いた\cite{closemonad,closemonadgithub}
+    \item<7-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
+    \item<8-> HList\cite{Kiselyov2004,hlist}を使うとよりよくできるかも……？
   \end{itemize}
 \end{frame}
 
