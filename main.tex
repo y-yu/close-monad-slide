@@ -268,7 +268,7 @@
   }
   
   \begin{itemize}
-    \item<3-> 高階関数\lstinline|process|とリソース\lstinline|resource|を受け取る
+    \item<3-> 関数\lstinline|process|とリソース\lstinline|resource|を受け取る
     \item<4-> \lstinline|process|が終了したら結果に関わらず\lstinline|close|を実行
     \item<5-> \lstinline|close|の呼び出しは自動的なので、忘れることがない
   \end{itemize}
@@ -322,7 +322,7 @@
 
   \begin{itemize}
     \item<2-> 型\lstinline|R|より抽象的な型\lstinline|AR|に対して、
-    \lstinline|A => Close[AR, B]|となる高階関数\lstinline|f|を受け取る
+    \lstinline|A => Close[AR, B]|となる関数\lstinline|f|を受け取る
     \item<3-> これらを用いて新しい\lstinline|Close[RA, B]|をインスタンス化
     \item<4-> \lstinline|process|は、\lstinline|try|内で
     \lstinline|self.process|を実行してその結果を\lstinline|f|に渡して、
