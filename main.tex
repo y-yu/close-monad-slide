@@ -244,6 +244,12 @@
         \calloutquote[width=11cm,position={(0.7,-0.2)},fill=blue!30,rounded corners]{\LARGE 自分でも何かモナドを作りたい！}
       \end{tikzpicture}
     }
+
+    \uncover<6->{
+      \begin{tikzpicture}
+        \calloutquote[width=9cm,position={(-0.7,-0.2)},fill=red!30,rounded corners]{\LARGE 実験的なモナドを作ろう！}
+      \end{tikzpicture}
+    }
   \end{center}  
 \end{frame}
 
@@ -485,7 +491,7 @@
   \lstinputlisting[style=scala, firstline=31, lastline=46]{./src/CloseTestHelper.scala}
 
   \begin{itemize}
-    \item<2-> \lstinline|run|の結果が同じかつリソースが順序でクローズされていることを
+    \item<2-> \lstinline|run|の結果が同じかつリソースが同じ順序でクローズされていることを
     同一性の条件にする
   \end{itemize}
 \end{frame}
@@ -520,14 +526,16 @@
 
     \item<3-> \lstinline|Equal|を図にすると次のようになる
     \begin{center}
-      \begin{tikzpicture}[scale=.7]
-        \tikzset{level distance=1.5cm, grow'=up}
-        \Tree[.\node{\lstinline|Equal[Close[R, A]]|};
-        \node{\lstinline|Equal[A]|};
-        [.\node{\lstinline|Equal[Error]|}; \node{\lstinline|Equal[Int]|}; ]
-        [.\node{\lstinline|Gen[TestCloser[R]]|}; \node{\lstinline|Gen[R]|}; ]
-        [.\node{\lstinline|Equal[ArrayBuffer[R]]|}; \node{\lstinline|Equal[R]|}; ] ]
-      \end{tikzpicture}
+      \uncover<4->{
+        \begin{tikzpicture}[scale=.7]
+          \tikzset{level distance=1.5cm, grow'=up}
+          \Tree[.\node{\lstinline|Equal[Close[R, A]]|};
+          \node{\lstinline|Equal[A]|};
+          [.\node{\lstinline|Equal[Error]|}; \node{\lstinline|Equal[Int]|}; ]
+          [.\node{\lstinline|Gen[TestCloser[R]]|}; \node{\lstinline|Gen[R]|}; ]
+          [.\node{\lstinline|Equal[ArrayBuffer[R]]|}; \node{\lstinline|Equal[R]|}; ] ]
+        \end{tikzpicture}
+      }
     \end{center}
   \end{itemize}
 \end{frame}
@@ -573,7 +581,10 @@
 
 \begin{frame}
   \centering
-  {\Huge Thank you for your attention!}
+  {\Huge Thank you for your attention!\\
+    \vspace{1em}
+    Any question?
+  }
 \end{frame}
 
 \end{document}
