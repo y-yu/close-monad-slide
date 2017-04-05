@@ -34,6 +34,7 @@
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{listings}
+\usepackage{tikz-qtree}
 
 \renewcommand{\kanjifamilydefault}{\gtdefault}
 
@@ -497,6 +498,37 @@
   \begin{itemize}
     \item<2-> 今まで作った\lstinline|Gen|を用いて\lstinline|Gen[Close[R, A]]|を定義
     \item<3-> 適当な割合で例外をスローする\lstinline|Close|と正常な値を返す\lstinline|Close|を生成
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Gen|と\protect\lstinline|Equal|の作成}
+
+  \begin{itemize}
+    \item<1-> \lstinline|Gen|を図にすると次のようになる
+    \begin{center}
+      \uncover<2->{
+        \begin{tikzpicture}[scale=.7]
+          \tikzset{level distance=1.5cm, grow'=up}
+          \Tree[.\node{\lstinline|Gen[Close[R, A]]|};
+          \node{\lstinline|Gen[A]|};
+          [.\node{\lstinline|Gen[Error]|}; \node{\lstinline|Gen[Int]|}; ]
+          \node{\lstinline|Gen[R]|}; ]
+        \end{tikzpicture}
+      }
+    \end{center}
+
+    \item<3-> \lstinline|Equal|を図にすると次のようになる
+    \begin{center}
+      \begin{tikzpicture}[scale=.7]
+        \tikzset{level distance=1.5cm, grow'=up}
+        \Tree[.\node{\lstinline|Equal[Close[R, A]]|};
+        \node{\lstinline|Equal[A]|};
+        [.\node{\lstinline|Equal[Error]|}; \node{\lstinline|Equal[Int]|}; ]
+        [.\node{\lstinline|Gen[TestCloser[R]]|}; \node{\lstinline|Gen[R]|}; ]
+        [.\node{\lstinline|Equal[ArrayBuffer[R]]|}; \node{\lstinline|Equal[R]|}; ] ]
+      \end{tikzpicture}
+    \end{center}
   \end{itemize}
 \end{frame}
 
