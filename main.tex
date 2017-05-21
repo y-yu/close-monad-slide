@@ -141,83 +141,38 @@
     \begin{exampleblock}{モナドの例}
       \begin{itemize}
         \item<7-> \lstinline|List[A]|
-        \item<8-> \lstinline|Option[A]|
-        \item<9-> \lstinline|Either[A, B]|
+        \item<8-> \lstinline|IO[A]|
+        \item<9-> \lstinline|Future[A]|
       \end{itemize}
     \end{exampleblock}
   }
 \end{frame}
 
 \begin{frame}
-  \frametitle{モナドの例 --- \protect\lstinline|Option[A]|}
+  \frametitle{モナドの例 --- \protect\lstinline|IO[A]|}
 
   \begin{itemize}
-    \item<2-> ある型\lstinline|A|の値があるかないかを表す
-    \item<3-> 長さが最大で1のリストと考えることもできる
+    \item<2-> IOを閉じ込めるデータ構造
   \end{itemize}
 
-  \uncover<4->{
-    \lstinputlisting[style=scala]{./src/Option.scala}
+  \uncover<3->{
+    \begin{exampleblock}{}
+      \lstinputlisting[style=scala]{./src/SideEffectIO.scala}
+    \end{exampleblock}
   }
 
   \begin{itemize}
-    \item<5-> \lstinline|point|と\lstinline|flatMap|から\lstinline|map|も定義
+    \item<4-> 関数\lstinline|readAndPrint|は参照透過ではない
   \end{itemize}
-\end{frame}
 
-\begin{frame}
-  \begin{center}
-    \uncover<1->{
-      \begin{tikzpicture}
-        \calloutquote[width=5cm,position={(0.7,-0.2)},fill=red!30,rounded corners]{いったい何が便利なの？}
-      \end{tikzpicture}
-    }
-
-    \uncover<2->{
-      \begin{tikzpicture}
-        \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{モナドであれば\textbf{手続き的な処理}を関数合成で書ける！}
-      \end{tikzpicture}
-    }
-  \end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{\protect\lstinline|Option|の手続き的な処理}
-
-  \uncover<2->{
-    \lstinputlisting[style=scala]{./src/ProceduralOption.scala}
+  \uncover<5->{
+    \begin{block}{参照透過\cite{fpinscala}}
+      \begin{shadequote}{}
+        式$e$があり、プログラム$p$において$p$の意味に影響を与えることなく$p$内の$e$を
+        全て$e$の評価結果に置き換えることができる
+      \end{shadequote}
+    \end{block}
   }
-
-  \begin{itemize}
-    \item<3-> \lstinline|isDefined|で\lstinline|None|か\lstinline|Some|かをチェックしたい
-    \item<4-> \lstinline|if|がネストしていて見通しが悪い
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{\protect\lstinline|Option|の\protect\lstinline|flatMap|/\lstinline|map|を用いた処理}
-
-  \uncover<2->{
-    \lstinputlisting[style=scala]{./src/FlatMapOption.scala}
-  }
-
-  \begin{itemize}
-    \item<3-> \lstinline|if|のネストを解消
-    \item<4-> ただ\lstinline|flatMap|/\lstinline|map|がネストしている
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{\protect\lstinline|Option|の\protect\lstinline|for|を用いた処理}
-
-  \uncover<2->{
-    \lstinputlisting[style=scala]{./src/ForOption.scala}
-  }
-
-  \begin{itemize}
-    \item<3-> \lstinline|for|-\lstinline|yield|は\lstinline|flatMap|/\lstinline|map|のシンタックスシュガー
-    \item<4-> ネストなどを排除した簡潔なコードに
-  \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -571,6 +526,7 @@
 \end{frame}
 
 \section*{参考文献}
+
 \begin{frame}[allowframebreaks]
   \frametitle{参考文献}
 
@@ -586,6 +542,80 @@
     \vspace{1em}
     Any question?
   }
+\end{frame}
+
+\section*{予備スライド}
+
+\begin{frame}
+  \frametitle{モナドの例 --- \protect\lstinline|Option[A]|}
+
+  \begin{itemize}
+    \item<2-> ある型\lstinline|A|の値があるかないかを表す
+    \item<3-> 長さが最大で1のリストと考えることもできる
+  \end{itemize}
+
+  \uncover<4->{
+    \lstinputlisting[style=scala]{./src/Option.scala}
+  }
+
+  \begin{itemize}
+    \item<5-> \lstinline|point|と\lstinline|flatMap|から\lstinline|map|も定義
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \uncover<1->{
+      \begin{tikzpicture}
+        \calloutquote[width=5cm,position={(0.7,-0.2)},fill=red!30,rounded corners]{いったい何が便利なの？}
+      \end{tikzpicture}
+    }
+
+    \uncover<2->{
+      \begin{tikzpicture}
+        \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{モナドであれば\textbf{手続き的な処理}を関数合成で書ける！}
+      \end{tikzpicture}
+    }
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Option|の手続き的な処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ProceduralOption.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|isDefined|で\lstinline|None|か\lstinline|Some|かをチェックしたい
+    \item<4-> \lstinline|if|がネストしていて見通しが悪い
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Option|の\protect\lstinline|flatMap|/\lstinline|map|を用いた処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/FlatMapOption.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|if|のネストを解消
+    \item<4-> ただ\lstinline|flatMap|/\lstinline|map|がネストしている
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\protect\lstinline|Option|の\protect\lstinline|for|を用いた処理}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ForOption.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|for|-\lstinline|yield|は\lstinline|flatMap|/\lstinline|map|のシンタックスシュガー
+    \item<4-> ネストなどを排除した簡潔なコードに
+  \end{itemize}
 \end{frame}
 
 \end{document}
