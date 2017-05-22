@@ -104,7 +104,7 @@
         \item<4-> 基盤開発本部 Dwango Cloud Service部\\
         認証基盤セクション
         \item<5-> Scalaでアカウントシステムを開発中
-        \item<6-> 最近の趣味は量子コンピュータ
+        \item<6-> 最近の趣味は量子コンピュータの勉強
       \end{itemize}
     \end{column}
   \end{columns}
@@ -156,13 +156,13 @@
   \end{itemize}
 
   \uncover<3->{
-    \begin{exampleblock}{}
+    \begin{exampleblock}{IOを利用するプログラム例}
       \lstinputlisting[style=scala]{./src/SideEffectIO.scala}
     \end{exampleblock}
   }
 
   \begin{itemize}
-    \item<4-> 関数\lstinline|readAndPrint|は参照透過ではない
+    \item<4-> \lstinline|readAndPrint|は\textbf{参照透過}ではない
   \end{itemize}
 
   \uncover<5->{
@@ -176,34 +176,46 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{ここまでのまとめ}
+  \frametitle{モナドの例 --- \protect\lstinline|IO[A]|}
 
-  \begin{center}
-    \uncover<2->{
-      \begin{tikzpicture}
-        \calloutquote[width=10cm,position={(-0.7,-0.2)},fill=green!30,rounded corners]{データ構造を作るならモナドの方がうれしい}
-      \end{tikzpicture}
-    }
-  \end{center}
+  \lstinputlisting[style=scala]{./src/IO.scala}
 
   \begin{itemize}
-    \item<3-> ドワンゴ社内ではオリジナルのモナドも使われている
+    \item<2-> 副作用を\lstinline|run|メソッドに閉じ込める
+    \item<3-> \lstinline|apply|は\lstinline|point|の別名
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{モナドの例 --- \protect\lstinline|IO[A]|}
+
+  \lstinputlisting[style=scala]{./src/ReadAndPrint.scala}
+
+  \begin{itemize}
+    \item<2-> \lstinline|for|-\lstinline|yield|は
+    \lstinline|map|/\lstinline|flatMap|のシンタックスシュガー
+    \item<3-> \lstinline|readAndPrint|が参照透過になる
+    \item<4-> 最後の\lstinline|run|メソッドで副作用を呼び出す
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ここまでのまとめ}
+
+  \begin{itemize}
+    \item<2-> 副作用をモナドに閉じ込めることができる
+    \item<3-> モナドと\lstinline|for|-\lstinline|yield|で合成を手続き的に書ける
+    \item<4-> ドワンゴ社内ではオリジナルのモナドも使われている
     \begin{itemize}
-      \item<4-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016,fujitasksimple}
-      \item<4-> Do（ロールバックモナド）
+      \item<5-> Fujitask（トランザクションモナド）\cite{fujitask,scalamatsuri2016,fujitasksimple}
+      \item<5-> Do（ロールバックモナド）
     \end{itemize}
   \end{itemize}
 
   \begin{center}
-    \uncover<5->{
-      \begin{tikzpicture}
-        \calloutquote[width=11cm,position={(0.7,-0.2)},fill=blue!30,rounded corners]{\LARGE 自分でも何かモナドを作りたい！}
-      \end{tikzpicture}
-    }
-
     \uncover<6->{
       \begin{tikzpicture}
-        \calloutquote[width=9cm,position={(-0.7,-0.2)},fill=red!30,rounded corners]{\LARGE 実験的なモナドを作ろう！}
+        \calloutquote[width=11cm,position={(0.7,-0.2)},fill=blue!30,rounded corners]{\LARGE 自分でも何かモナドを作りたい！}
       \end{tikzpicture}
     }
   \end{center}  
@@ -219,7 +231,8 @@
   }
   
   \begin{itemize}
-    \item<3-> \lstinline|close|を忘れたらリソースリーク！
+    \item<3-> リソース確保と解放が副作用
+    \item<4-> \lstinline|close|を忘れたらリソースリーク！
   \end{itemize}
 \end{frame}
 
