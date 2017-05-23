@@ -189,13 +189,30 @@
 \begin{frame}
   \frametitle{モナドの例 --- \protect\lstinline|IO[A]|}
 
+  \begin{itemize}
+    \item<1-> \lstinline|IO|で副作用を隠蔽する
+  \end{itemize}
+
+  \uncover<2->{
+    \lstinputlisting[style=scala]{./src/ReadAndPrintWithoutFor.scala}
+  }
+
+  \begin{itemize}
+    \item<3-> \lstinline|readAndPrint|が参照透過になる
+    \item<4-> 最後の\lstinline|run|メソッドで副作用を呼び出す
+    \item<5-> \lstinline|map|/\lstinline|flatMap|がネストしていて見通しが悪い
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{モナドの例 --- \protect\lstinline|IO[A]|}
+
   \lstinputlisting[style=scala]{./src/ReadAndPrint.scala}
 
   \begin{itemize}
     \item<2-> \lstinline|for|-\lstinline|yield|は
     \lstinline|map|/\lstinline|flatMap|のシンタックスシュガー
-    \item<3-> \lstinline|readAndPrint|が参照透過になる
-    \item<4-> 最後の\lstinline|run|メソッドで副作用を呼び出す
+    \item<3-> \lstinline|map|/\lstinline|flatMap|のネストを解消
   \end{itemize}
 \end{frame}
 
@@ -533,8 +550,10 @@
       \item<5-> プロダクションで利用するにはやや不安
     \end{itemize}
     \item<6-> Close MonadについてはQiitaにも書いてGitHubに置いた\cite{closemonad,closemonadgithub}
-    \item<7-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015}
-    \item<8-> HList\cite{Kiselyov2004,hlist}を使うとよりよくできるかも……？
+    \item<7-> 継続モナドを用いたリソース管理の方法もある\cite{tanakh2015,jwhaco2017}
+    \begin{itemize}
+      \item 継続モナドを利用すると全てのローンパターンをモナドにできるかも
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
